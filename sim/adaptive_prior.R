@@ -1,3 +1,6 @@
+# script for evaluating the use/need for an adaptive prior for calculating s-values
+
+# function for simulating NB data with a given SD of the betas (LFCs)
 sim <- function(s, m, n, dispersion) {
   n.per.group <- n/2
   condition <- factor(rep(letters[1:2],each=n.per.group))
@@ -11,7 +14,7 @@ sim <- function(s, m, n, dispersion) {
   list(Y=Y, beta.mat=beta.mat)
 }
 
-# prior.control for non-adaptive shrinkage
+# prior.control for *non-adaptive* shrinkage
 pc <- list(
   no.shrink = 1,
   prior.mean = 0,
@@ -45,7 +48,7 @@ s <- c(.01,.025,.05,.1,.25,.5,1)
 scale <- c(.1, .25, .5, 1, 2, 4)
 # a grid for the per-group sample size
 # n=3 we notice not much error, n=100 big error
-ns <- c(5,10,50)
+ns <- c(5,10,50) # these are n-per-group sample sizes
 grid <- expand.grid(ns=ns,s=s,scale=scale)
 grid <- data.frame(lapply(grid, rep, each=100))
 
@@ -70,9 +73,10 @@ res <- bplapply(seq_len(nrow(grid)), function(i) {
   param <- rep(dispersion, nrow(Y))
   # scale the prior based on oracle knowledge of beta distribution
   pc$prior.scale <- grid$scale[i] * grid$s[i]
-  # fit once with adaptive prior, once with constant scale = 1
+  # fit once with adaptive prior...
   fit.adapt <- apeglm(Y=Y,x=design,log.lik=logLikNB,
                       param=param,coef=2,prior.control=pc,offset=offset)
+  # ... once with constant scale = 1
   fit.const <- apeglm(Y=Y,x=design,log.lik=logLikNB,
                       param=param,coef=2,prior.control=pc0,offset=offset)
   # the "error inflation factor" = how much more MAE on betas

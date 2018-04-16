@@ -1,3 +1,5 @@
+# script for evaluating CPM filtering - how often we remove DE genes with relevant LFC signal
+
 suppressPackageStartupMessages(library(DESeq2))
 library(edgeR)
 
@@ -12,6 +14,7 @@ res <- results(bottomly.se, alpha=.05)
 cts <- counts(bottomly.se)
 ncts <- counts(bottomly.se, normalized=TRUE)
 
+# 100 times, we sample 3 from each strain, while balancing for batch
 keep <- matrix(NA, nrow=nrow(cts), ncol=100)
 lfcs <- matrix(NA, nrow=nrow(cts), ncol=100)
 for (i in 1:100) {
@@ -40,10 +43,13 @@ for (i in 1:100) {
 padj <- res$padj
 padj[is.na(padj)] <- 1
 
+# how many filtered, significant in full and normalized counts > 10?
 rm.ncts <- rowMeans(ncts+.125)
 filtered.sig <- rowMeans(keep) < .5 & padj < .05 & rm.ncts > 10
 sum(filtered.sig)
 
+# how often was the sign of the LFC nevertheless correct?
+# that is, these have relevant signal for LFC estimation
 wfs <- which(filtered.sig)
 sign.correct <- rowMeans(sign(lfcs[wfs,]) == sign(res$log2FoldChange[wfs]))
 mean(sign.correct)
@@ -72,6 +78,7 @@ pts.idx <- identify(rowMeans(keep), -log10(res$pvalue))
 pts.idx <- c(11838, 16061, 24854, 36672)
 which(colSums(keep[pts.idx,]) == 4)[1]
 
+# example plot of counts for one iteration
 set.seed(56)
 idx <- with(colData(bottomly.se), 
             c(sample(which(strain == "C" & batch == "4"), 1),
