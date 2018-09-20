@@ -10,7 +10,7 @@ library(REBayes)
 
 ### Analysis
 
-load("eval/sim/bottomly/rdata/bottomly_sumexp.RData")
+load("sim/rdata/bottomly_sumexp.RData")
 bottomly.se <- updateObject(bottomly)
 levels(bottomly.se$strain) <- c("C","D")
 bottomly.se$batch <- factor(bottomly.se$experiment.number)
@@ -27,7 +27,7 @@ source("common/generateNB.R")
 library(BiocParallel)
 BPPARAM <- MulticoreParam(4)
 
-load("eval/pickrell/rdata/meanDispPairs.RData")
+load("sim/rdata/meanDispPairs.RData")
 is.pickrell <- TRUE
 
 niter <- 10
@@ -79,9 +79,9 @@ bottomly10 <- bplapply(1:niter, function(i) {
   lfcs <- eval.sim(Y, condition, beta)
 }, BPPARAM=BPPARAM)
 
-save(pickrell5, bottomly5, pickrell10, bottomly10, file="eval/sim/rdata/res.rda")
+save(pickrell5, bottomly5, pickrell10, bottomly10, file="sim/rdata/res.rda")
 
-load("eval/sim/rdata/res.rda")
+load("sim/rdata/res.rda")
 
 ### Plot 
 
@@ -90,7 +90,7 @@ library(reshape)
 library(cowplot)
 library(rafalib)
 
-png("eval/sim/outfigure/sim_p.png", width = 10, height = 10, units = "in", res = 300)
+png("sim/outfigure/sim_p.png", width = 10, height = 10, units = "in", res = 300)
 g1 <- plotOverLFC(pickrell5, error=FALSE) + 
 			theme(axis.text = element_text(size=14),
 				axis.title = element_text(size=22, face="bold"),
@@ -115,7 +115,7 @@ plot_grid(g1, g2, g3, g4, labels="auto", hjust = 0, vjust = 1, scale = c(1,1,1,1
 dev.off()
 
 
-png("eval/sim/outfigure/sim_error_mean.png", width = 10, height = 10, units = "in", res = 300)
+png("sim/outfigure/sim_error_mean.png", width = 10, height = 10, units = "in", res = 300)
 # Pickrell
 
 g1 <- plotOverMean(pickrell5, error=FALSE) +  
@@ -144,7 +144,7 @@ g4 <- plotOverMean(bottomly10, error=FALSE) +
 plot_grid(g1, g2, g3, g4, labels="auto", hjust = 0, vjust = 1, scale = c(1,1,1,1))
 dev.off()
 
-png("eval/sim/outfigure/sim_b.png", width = 10, height = 10, units = "in", res = 300)
+png("sim/outfigure/sim_b.png", width = 10, height = 10, units = "in", res = 300)
 g1 <- plotOverLFC(bottomly5, error=FALSE) + 
 			theme(axis.text = element_text(size=14),
 				axis.title = element_text(size=22, face="bold"),
@@ -169,19 +169,19 @@ plot_grid(g1, g2, g3, g4, labels="auto", hjust = 0, vjust = 1, scale = c(1,1,1,1
 dev.off()
 
 
-png("eval/sim/outfigure/sim_scatter_p_5.png", width = 5, height = 5, units = "in", res = 300)
+png("sim/outfigure/sim_scatter_p_5.png", width = 5, height = 5, units = "in", res = 300)
 plotLFCs(pickrell5[[1]]$lfcs, 6)
 dev.off()
 
-png("eval/sim/outfigure/sim_scatter_b_5.png", width = 5, height = 5, units = "in", res = 300)
+png("sim/outfigure/sim_scatter_b_5.png", width = 5, height = 5, units = "in", res = 300)
 plotLFCs(bottomly5[[1]]$lfcs, 3)
 dev.off()
 
 
-png("eval/sim/outfigure/sim_scatter_p_10.png", width = 5, height = 5, units = "in", res = 300)
+png("sim/outfigure/sim_scatter_p_10.png", width = 5, height = 5, units = "in", res = 300)
 plotLFCs(pickrell10[[1]]$lfcs, 6)
 dev.off()
 
-png("eval/sim/outfigure/sim_scatter_b_10.png", width = 5, height = 5, units = "in", res = 300)
+png("sim/outfigure/sim_scatter_b_10.png", width = 5, height = 5, units = "in", res = 300)
 plotLFCs(bottomly10[[1]]$lfcs, 3)
 dev.off()

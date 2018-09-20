@@ -9,7 +9,7 @@ library(REBayes)
 
 source("common/funcs.R")
 
-load("mixology/RNA.mixology.analysis/cache/RSCE.mRNA.unstranded.rda")
+load("mixology/RSCE.mRNA.unstranded.rda")
 
 RSCE.mRNA.unstranded$genes <- RSCE.mRNA.unstranded$genes[,c("GeneID", "Symbols")]
 
